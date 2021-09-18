@@ -1,25 +1,46 @@
-import logo from './logo.svg';
+import React, { Component } from 'react';
+import Header from './components/Header';
+import UsersList from './components/UsersList';
+import axios from 'axios';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  state = {
+    users: [],
+    isLoading: false,
+    errorMsg: ''
+  }
+
+  render() {
+    const {users, isLoading, errorMsg} = this.state;
+    console.log(users);
+    return (
+      <div className="main-section">
+        <Header />
+        {isLoading && <p className="loading">Loading...</p>}
+        {errorMsg && <p className="errorMsg">{errorMsg}</p>}
+        <UsersList users={users} />
+      </div>
+    )
+  }
+
+  componentDidMount() {
+    this.setState({ isLoading: true });
+    axios.get('https://randomuser.me/api/?page=0&results=20')
+    .then((response) => {
+      this.setState({users: response.data.results, errorMsg: ''})
+    })
+    .catch((error) => {
+      this.setState({
+        errorMsg: 'Intentelo mas tarde.'
+      })
+    })
+    .finally(() => {
+      this.setState({
+        isLoading: false
+      })
+    })
+  }
 }
 
 export default App;
